@@ -7,12 +7,13 @@ require("./db/db")
 
 
 const userControllers = require("./controllers/userControllers");
-
+const photoControllers = require("./controllers/photoControllers");
 
 // Middleware
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(methodOverride("_method"));
 app.use("/users", userControllers);
+app.use("/photos", photoControllers);
 
 
 app.get("/", (req, res) => {

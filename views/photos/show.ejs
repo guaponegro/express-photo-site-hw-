@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+        <h1>Photo Show Page</h1>
+    
+        <ul>
+            <li>Name: <%= photos.name %></li> 
+            <li>Size: <%= photos.size %></li>
+            <li>Url: <%= photos.url %></li>
+        </ul>
+    
+        <!-- Edit Button -->
+        <a href="/photos/<%=photos.id%>/edit">Edit</a>
+    
+        <!-- Delete Button -->
+        <form action="/photos/<%=photos.id%>?_method=DELETE" method="POST">
+            <input type="submit" value="delete">
+        </form>
+</body>
+</html>

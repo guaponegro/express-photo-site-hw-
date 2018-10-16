@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+        <h1>Photo Page</h1>
+
+        <% for(let i = 0; i < photos.length; i++){ %>
+              <a href="/photos/<%=photos[i].id%>"><%=photos[i].name %></a> is <%=photos[i].size %>
+          <br>
+        <!-- Edit Button -->
+        <a href="/photos/<%=photos[i].id%>/edit">Edit</a>
+        <!-- Delete Button -->
+        <form action="/photos/<%=photos[i].id%>?_method=DELETE" method="POST">
+            <input type="submit" value="delete">
+        </form>
+    <% } %> 
+    
+    <nav>
+        <a href="/photos/new">Create a New Photo</a>
+    </nav>
+</body>
+</html>
