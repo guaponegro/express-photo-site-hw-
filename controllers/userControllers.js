@@ -33,9 +33,40 @@ router.post('/', (req, res) => {
     });
 });
 
+// Edit Route
+router.get('/:id/edit', (req, res) => {
+    User.findById(req.params.id, (err, foundUsers) => {
+        res.render('users/edit.ejs', {users: foundUsers});
+    });
+});
+
+// Show route
+router.get('/:id', (req, res) => {
+    console.log(req.params);
+    User.findById(req.params.id, (err, foundUsers) => {
+      console.log(foundUsers, ' foundUsers')
+        res.render('users/show.ejs', {users: foundUsers});
+    });
+});
 
 
+// Delete Route 
+router.delete('/:id', (req, res) => {
+    console.log(req.params.id, ' id in delete route');
+    User.findByIdAndRemove(req.params.id, (err, deleteUsers) => {
+      res.redirect('/users');
+    });
+  });
 
+
+// Route to Update Model 
+router.put('/:id', (req, res) => {
+    console.log(req.params.id);
+    console.log(req.body);
+    User.findByIdAndUpdate(req.params.id, req.body, (err, updatedModel) => {
+      res.redirect('/users')
+    });
+})
 
 
 module.exports = router;
