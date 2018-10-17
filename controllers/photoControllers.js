@@ -5,7 +5,7 @@ const Photo = require("../models/photos");
 const User = require("../models/users")
 
 // Index Route
-router.get("/", async (req, res) => {
+router.get("/", async (req, res, next) => {
     try{
         const allPhotos = await Photo.find()
         res.render("photos/index.ejs", {photos: allPhotos});
@@ -15,7 +15,7 @@ router.get("/", async (req, res) => {
 });
 
 // New Route
-router.get('/new',async (req, res) => {
+router.get('/new',async (req, res, next) => {
     try{
         const foundUsers = await User.find({});
         res.render('photos/new.ejs', {
@@ -27,7 +27,7 @@ router.get('/new',async (req, res) => {
 });
 
 // Route to Post Created Photos
-router.post('/', async (req, res) => {
+router.post('/', async (req, res, next) => {
     try{
         const newUser = await User.findById(req.body.userId);
         const newPhoto = await Photo.create(req.body);
@@ -40,7 +40,7 @@ router.post('/', async (req, res) => {
 });
 
 // Edit Route
-router.get('/:id/edit', async (req, res) => {
+router.get('/:id/edit', async (req, res, next) => {
     try{
         const foundPhotos = await Photo.findByIdAndUpdate(req.params.id, req.body)
         res.render('photos/edit.ejs', {photos: foundPhotos});
@@ -50,7 +50,7 @@ router.get('/:id/edit', async (req, res) => {
 });
 
 // Show route
-router.get('/:id', async (req, res) => {
+router.get('/:id', async (req, res, next) => {
     try{
         const foundPhotos = await Photo.findById(req.params.id)
         res.render('photos/show.ejs', {photos: foundPhotos});
@@ -62,17 +62,22 @@ router.get('/:id', async (req, res) => {
 
 // Delete Route 
 router.delete('/:id', async (req, res) => {
+    const user = await User.findOne({"photos._id": req.params.id});
+    const photo = await Photo.findById(req.params.id);
+    user.photos.id(req.params.id).remove();
+    await Photo.findByIdAndDelete(req.params.id);
+    await user.save();
     try{
-        await Photo.findByIdAndDelete(req.params.id)
-        res.redirect("/photos")
+        await User.findByIdAndRemove(req.params.id)
+        res.redirect("/users");
     } catch(err){
-        next(err)
+        res.send(err)
     }
-});
+  });
 
 
 // Route to Update Model 
-router.put('/:id', async (req, res) => {
+router.put('/:id', async (req, res, next) => {
     try{
         await Photo.findByIdAndUpdate(req.params.id, req.body, {new: true})
         res.redirect("/photos")
