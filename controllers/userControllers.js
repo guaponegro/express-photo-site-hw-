@@ -4,68 +4,74 @@ const mongoose = require("mongoose");
 const User = require("../models/users");
 
 // Index Route
-router.get("/", (req, res) => {
-    User.find({}, (err, allUsers) => {
-        if(err){
-            console.log(err);
-        }else {
-            console.log(allUsers);
-            res.render("users/index.ejs", {users: allUsers});
-        }
-    });
+router.get("/", async (req, res) => {
+    try{
+        const allUsers = await User.find();
+        res.render("users/index.ejs", {users: allUsers});
+    } catch(err){
+        res.send(err)
+    }
 });
 
 // New Route
-router.get('/new', (req, res) => {
-    res.render('users/new.ejs');
-  });
+router.get('/new', async (req, res) => {
+    try{
+        res.render('users/new.ejs');
+    } catch(err){
+        res.send(err)
+    }
+});
 
 // Route to Post Created Users
-router.post('/', (req, res) => {
-    console.log(req.body, ' this is where our info from the fruit form will live');
-    User.create(req.body, (err, createdUsers) => {
-        if(err){
-            console.log(err)
-        } else {
-            console.log(createdUsers);
-            res.redirect('/users')
-        }   
-    });
+router.post('/', async (req, res) => {
+    try{
+        await User.create(req.body)
+        res.redirect("/users")
+    } catch(err){
+        res.send(err)
+    }
 });
 
 // Edit Route
-router.get('/:id/edit', (req, res) => {
-    User.findById(req.params.id, (err, foundUsers) => {
+router.get('/:id/edit', async (req, res) => {
+    try{
+        const foundUsers = await User.findByIdAndUpdate(req.params.id, req.body)
         res.render('users/edit.ejs', {users: foundUsers});
-    });
+    } catch(err){
+        res.send(err)
+    }
 });
 
 // Show route
-router.get('/:id', (req, res) => {
-    console.log(req.params);
-    User.findById(req.params.id, (err, foundUsers) => {
-      console.log(foundUsers, ' foundUsers')
+router.get('/:id', async (req, res) => {
+    try{
+        const foundUsers = await User.findById(req.params.id)
         res.render('users/show.ejs', {users: foundUsers});
-    });
+    }catch(err){
+        res.send(err)
+    }
 });
 
 
 // Delete Route 
-router.delete('/:id', (req, res) => {
-    console.log(req.params.id, ' id in delete route');
-    User.findByIdAndRemove(req.params.id, (err, deleteUsers) => {
-      res.redirect('/users');
-    });
+router.delete('/:id', async (req, res) => {
+    try{
+        await User.findByIdAndRemove(req.params.id)
+        res.redirect("/users");
+    } catch(err){
+        res.send(err)
+    }
   });
 
 
 // Route to Update Model 
-router.put('/:id', (req, res) => {
-    console.log(req.params.id);
-    console.log(req.body);
-    User.findByIdAndUpdate(req.params.id, req.body, (err, updatedModel) => {
-      res.redirect('/users')
-    });
+router.put('/:id', async (req, res) => {
+    try{
+        await User.findByIdAndUpdate(req.params.id, req.body, {new: true})
+        res.redirect("/users")
+    } catch(err){
+        res.send(err)
+    }
 })
 
 

@@ -4,68 +4,74 @@ const mongoose = require("mongoose");
 const Photo = require("../models/photos");
 
 // Index Route
-router.get("/", (req, res) => {
-    Photo.find({}, (err, allPhotos) => {
-        if(err){
-            console.log(err);
-        }else {
-            console.log(allPhotos);
-            res.render("photos/index.ejs", {photos: allPhotos});
-        }
-    });
+router.get("/", async (req, res) => {
+    try{
+        const allPhotos = await Photo.find()
+        res.render("photos/index.ejs", {photos: allPhotos});
+    } catch(err){
+        res.send(err)
+    }
 });
 
 // New Route
-router.get('/new', (req, res) => {
-    res.render('photos/new.ejs');
-  });
+router.get('/new',async (req, res) => {
+    try{
+        res.render('photos/new.ejs');
+    } catch(err){
+        res.send(err)
+    }
+});
 
-// Route to Post Created Users
-router.post('/', (req, res) => {
-    console.log(req.body, ' this is where our info from the fruit form will live');
-    Photo.create(req.body, (err, createdPhotos) => {
-        if(err){
-            console.log(err)
-        } else {
-            console.log(createdPhotos);
-            res.redirect('/photos')
-        }   
-    });
+// Route to Post Created Photos
+router.post('/', async (req, res) => {
+    try{
+        await Photo.create(req.body)
+        res.redirect("/photos")
+    } catch(err){
+        res.send(err)
+    }
 });
 
 // Edit Route
-router.get('/:id/edit', (req, res) => {
-    Photo.findById(req.params.id, (err, foundPhotos) => {
+router.get('/:id/edit', async (req, res) => {
+    try{
+        const foundPhotos = await Photo.findByIdAndUpdate(req.params.id, req.body)
         res.render('photos/edit.ejs', {photos: foundPhotos});
-    });
+    } catch(err){
+        res.send(err)
+    }
 });
 
 // Show route
-router.get('/:id', (req, res) => {
-    console.log(req.params);
-    Photo.findById(req.params.id, (err, foundPhotos) => {
-      console.log(foundPhotos, ' foundPhotos')
+router.get('/:id', async (req, res) => {
+    try{
+        const foundPhotos = await Photo.findById(req.params.id)
         res.render('photos/show.ejs', {photos: foundPhotos});
-    });
+    } catch(err){
+        res.send(err)
+    }
 });
 
 
 // Delete Route 
-router.delete('/:id', (req, res) => {
-    console.log(req.params.id, ' id in delete route');
-    Photo.findByIdAndRemove(req.params.id, (err, deletePhotos) => {
-      res.redirect('/photos');
-    });
-  });
+router.delete('/:id', async (req, res) => {
+    try{
+        await Photo.findByIdAndDelete(req.params.id)
+        res.redirect("/photos")
+    } catch(err){
+        res.send(err)
+    }
+});
 
 
 // Route to Update Model 
-router.put('/:id', (req, res) => {
-    console.log(req.params.id);
-    console.log(req.body);
-    Photo.findByIdAndUpdate(req.params.id, req.body, (err, updatedModel) => {
-      res.redirect('/photos')
-    });
+router.put('/:id', async (req, res) => {
+    try{
+        await Photo.findByIdAndUpdate(req.params.id, req.body, {new: true})
+        res.redirect("/photos")
+    } catch(err){
+        res.send(err)
+    }
 })
 
 
