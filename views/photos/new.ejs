@@ -14,6 +14,11 @@
           Size: <input type="text" name="size"><br/>
           Url: <input type="text" name="url"><br/>
           <input type="submit" value="Create Photo">
+          <select name="userId">
+            <% for(i = 0; i < users.length; i++) { %>
+                <option value="<%= users[i]._id%>"><%= users[i].username%></option>
+            <% } %>
+          </select>
         </form>
 </body>
 </html>

@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const User = require("../models/users");
+const Photo = require("../models/photos")
 
 // Index Route
 router.get("/", async (req, res) => {
@@ -46,7 +47,11 @@ router.get('/:id/edit', async (req, res) => {
 router.get('/:id', async (req, res) => {
     try{
         const foundUsers = await User.findById(req.params.id)
-        res.render('users/show.ejs', {users: foundUsers});
+        const foundPhotos = await Photo.findById(req.params.id)
+        res.render('users/show.ejs', {
+            users: foundUsers,
+            photos: foundPhotos
+        });
     }catch(err){
         res.send(err)
     }

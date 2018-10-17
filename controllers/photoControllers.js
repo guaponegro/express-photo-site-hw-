@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const Photo = require("../models/photos");
+const User = require("../models/users")
 
 // Index Route
 router.get("/", async (req, res) => {
@@ -16,19 +17,25 @@ router.get("/", async (req, res) => {
 // New Route
 router.get('/new',async (req, res) => {
     try{
-        res.render('photos/new.ejs');
+        const foundUsers = await User.find({});
+        res.render('photos/new.ejs', {
+            users: foundUsers
+        });
     } catch(err){
-        res.send(err)
+        next(err)
     }
 });
 
 // Route to Post Created Photos
 router.post('/', async (req, res) => {
     try{
-        await Photo.create(req.body)
+        const newUser = await User.findById(req.body.userId);
+        const newPhoto = await Photo.create(req.body);
+        newUser.photos.push(newPhoto);
+        await newUser.save();
         res.redirect("/photos")
     } catch(err){
-        res.send(err)
+        next(err)
     }
 });
 
@@ -38,7 +45,7 @@ router.get('/:id/edit', async (req, res) => {
         const foundPhotos = await Photo.findByIdAndUpdate(req.params.id, req.body)
         res.render('photos/edit.ejs', {photos: foundPhotos});
     } catch(err){
-        res.send(err)
+        next(err)
     }
 });
 
@@ -48,7 +55,7 @@ router.get('/:id', async (req, res) => {
         const foundPhotos = await Photo.findById(req.params.id)
         res.render('photos/show.ejs', {photos: foundPhotos});
     } catch(err){
-        res.send(err)
+        next(err)
     }
 });
 
@@ -59,7 +66,7 @@ router.delete('/:id', async (req, res) => {
         await Photo.findByIdAndDelete(req.params.id)
         res.redirect("/photos")
     } catch(err){
-        res.send(err)
+        next(err)
     }
 });
 
@@ -70,7 +77,7 @@ router.put('/:id', async (req, res) => {
         await Photo.findByIdAndUpdate(req.params.id, req.body, {new: true})
         res.redirect("/photos")
     } catch(err){
-        res.send(err)
+        next(err)
     }
 })
 
